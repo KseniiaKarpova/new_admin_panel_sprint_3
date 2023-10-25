@@ -1,0 +1,70 @@
+version: '3.7'
+
+services:
+  elasticsearch:
+    image: elasticsearch:8.6.2
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+    environment:
+      - "discovery.type=single-node"
+      - "xpack.security.enabled=false"
+    env_file:
+      - .env
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+
+  etl:
+    container_name: etl
+    build:
+      context: etl
+      dockerfile: .docker/Dockerfile
+    volumes:
+      - ./logs:/etl/logs
+    env_file:
+      - .env
+    restart: always
+    depends_on:
+      - elasticsearch
+      - postgres
+
+
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+      - ./postgres:/docker-entrypoint-initdb.d
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_DB=${PG_NAME}
+    restart: always
+
+
+  data_transfer_sqlite_to_pg:
+    build:
+      context: ./data_transfer_sqlite_to_pg
+      dockerfile: Dockerfile
+    container_name: data_transfer_sqlite_to_pg
+    ports:
+      - "8888:8888"
+    env_file:
+      - .env
+    restart: always
+    depends_on:
+      - postgres
+
+
+networks:
+  net:
+    driver: bridge
+
+volumes:
+  es_data:
+    driver: local
+  pg_data:
+    driver: local
