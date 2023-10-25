@@ -31,5 +31,3 @@ class JsonFileStorage(BaseStorage):
                 data = myfile.read()
             return json.loads(data)
         return {}
-
-

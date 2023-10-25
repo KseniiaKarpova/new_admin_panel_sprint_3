@@ -1,6 +1,7 @@
 import abc
 from typing import Any, Dict
 
+
 class BaseStorage(abc.ABC):
     """Абстрактное хранилище состояния.
 

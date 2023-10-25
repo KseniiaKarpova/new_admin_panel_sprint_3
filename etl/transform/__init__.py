@@ -5,7 +5,7 @@ from collections.abc import Generator
 
 
 @coroutine
-def transform_movies(next_node: Generator) -> Generator[None,List[Dict],None]:
+def transform_movies(next_node: Generator) -> Generator[None, List[Dict], None]:
     while movie_dicts := (yield):
         data = []
         # Преобразование данных
@@ -16,7 +16,7 @@ def transform_movies(next_node: Generator) -> Generator[None,List[Dict],None]:
         next_node.send(data)
 
 
-def dict_to_movie(temp:Dict) -> Movie:
+def dict_to_movie(temp: Dict) -> Movie:
     actors = [Person(id=x.get('person_id'), name=x.get('person_name')) for x in temp.get('persons') if
               x.get('person_role') == 'actor']
     writers = [Person(id=x.get('person_id'), name=x.get('person_name')) for x in temp.get('persons') if
@@ -37,7 +37,8 @@ def dict_to_movie(temp:Dict) -> Movie:
 
     return item
 
-def movie_to_es_data(movie:Movie, index='movies') -> Dict:
+
+def movie_to_es_data(movie: Movie, index='movies') -> Dict:
     es_data = {
         "_index": index,
         "_id": movie.id,
@@ -50,7 +51,7 @@ def movie_to_es_data(movie:Movie, index='movies') -> Dict:
             "director": movie.director,
             "actors_names": movie.actors_names,
             "writers_names": movie.writers_names,
-            "actors": [dict(p) for p in movie.actors] ,
+            "actors": [dict(p) for p in movie.actors],
             "writers": [dict(p) for p in movie.writers],
         }
     }

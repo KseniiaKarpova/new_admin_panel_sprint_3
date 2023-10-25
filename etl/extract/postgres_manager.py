@@ -1,6 +1,6 @@
 import psycopg2
 import os
-from decorators import backoff_logger, coroutine
+from decorators import coroutine
 from extract.scripts import SELECT_ALL, SELECT_LAST_UPDATE
 from collections.abc import Generator
 from psycopg2.extras import DictCursor
@@ -24,17 +24,17 @@ class PostgresConnector:
     def open(self):
         logger.info('Open PG connection')
         self.connection = psycopg2.connect(**self.settings)
-        return  self.connection
-        #self.connection.commit()
+        return self.connection
 
     def close(self):
         logger.info('Close PG connection')
         self.connection.close()
 
+
 class Postgres:
 
-    def __init__(self,conn:PostgresConnector):
-        self.conn=conn.open()
+    def __init__(self, conn: PostgresConnector):
+        self.conn = conn.open()
 
     def get_cursor_all(self):
         ''' Получение всех данных из Postgres '''
@@ -47,11 +47,10 @@ class Postgres:
         ''' Получение последних обновленнных данных '''
         logger.info(f'get_cursor_last_update = {last_updated}')
         cursor = self.conn.cursor(cursor_factory=DictCursor)
-        cursor.execute(SELECT_LAST_UPDATE, (last_updated,last_updated,last_updated,last_updated,))
+        cursor.execute(SELECT_LAST_UPDATE, (last_updated, last_updated, last_updated, last_updated, ))
         return cursor
 
-
     @coroutine
-    def extract(self, next_node: Generator, cursor, size:int=100) -> Generator[None,List[Dict],None]:
+    def extract(self, next_node: Generator, cursor, size: int = 100) -> Generator[None, List[Dict], None]:
         while results := cursor.fetchmany(size=size):
             next_node.send(results)

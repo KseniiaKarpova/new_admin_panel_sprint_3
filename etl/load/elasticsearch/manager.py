@@ -15,7 +15,7 @@ class ElasticConnection:
     def __init__(self):
         self.client = Elasticsearch(f"http://{os.environ.get('ES_HOST')}:{os.environ.get('ES_PORT')}/")
 
-    def is_exist_index(self, index:str) -> bool:
+    def is_exist_index(self, index: str) -> bool:
         if self.client.indices.exists(index=index):
             return True
         else:
@@ -23,7 +23,7 @@ class ElasticConnection:
 
     def create_index(self, name, path_index) -> None:
         if not self.is_exist_index(index=name):
-            path_index=os.path.join(os.path.dirname(os.path.abspath(__file__)), path_index)
+            path_index = os.path.join(os.path.dirname(os.path.abspath(__file__)), path_index)
             with open(path_index) as index_file:
                 body = json.load(index_file)
                 self.client.indices.create(index=name, body=body)
@@ -31,13 +31,12 @@ class ElasticConnection:
 
 class ElasticExecutor:
 
-    def __init__(self, client:ElasticConnection):
-        self.client=client
+    def __init__(self, client: ElasticConnection):
+        self.client = client
 
     @on_exception(expo, Exception, logger=backoff_logger)
     @coroutine
-    def insert_movies(self)-> Generator[None, List[Any], None]:
+    def insert_movies(self) -> Generator[None, List[Any], None]:
         while values := (yield):
             STATE.set_state(key=KEY, value=datetime.now().isoformat())
-            print(STATE.get_state(KEY), len(values))
             bulk(self.client.client, values)

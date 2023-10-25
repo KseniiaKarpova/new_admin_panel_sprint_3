@@ -1,4 +1,4 @@
-SELECT="""SELECT
+SELECT = """SELECT
    fw.id,
    fw.title,
    fw.description,
@@ -28,7 +28,4 @@ ORDER = " GROUP BY fw.id,g.modified, p.modified ORDER BY modified ASC"
 
 SELECT_ALL = SELECT + ORDER
 
-SELECT_LAST_UPDATE = SELECT + ' WHERE fw.modified > %s or  g.modified > %s or p.modified > %s  or fw.created > %s '+ ORDER
-
-
-
+SELECT_LAST_UPDATE = SELECT + ' WHERE fw.modified > %s or  g.modified > %s or p.modified > %s  or fw.created > %s ' + ORDER

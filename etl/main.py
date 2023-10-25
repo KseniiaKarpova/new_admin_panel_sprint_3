@@ -3,7 +3,6 @@ from storage import STATE, KEY
 from dotenv import load_dotenv
 from transform import transform_movies
 from load.elasticsearch.manager import ElasticExecutor, ElasticConnection
-from time import sleep
 
 
 load_dotenv()
@@ -18,8 +17,8 @@ if __name__ == '__main__':
     es_conn = ElasticConnection()
 
     # Подлкючение к базе данных ElasticSearch
-    es_conn.create_index('movies','movies.json')
-    elactic=ElasticExecutor(client=es_conn)
+    es_conn.create_index('movies', 'movies.json')
+    elactic = ElasticExecutor(client=es_conn)
 
     print('last_date = ', last_date)
     if last_date is None:
@@ -28,7 +27,6 @@ if __name__ == '__main__':
     else:
         # ищем последние обновленния
         cursor = pg.get_cursor_last_update(last_date)
-
 
     while True:
         load_coro = elactic.insert_movies()
