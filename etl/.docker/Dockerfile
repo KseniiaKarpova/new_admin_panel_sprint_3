@@ -7,7 +7,5 @@ COPY requirements.txt requirements.txt
 RUN  pip install --upgrade pip \
      && pip install -r requirements.txt --no-cache-dir
 
-COPY . /app
-#RUN sh init.sh
+COPY . .
 CMD ["python", "main.py"]
-#["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8081"]

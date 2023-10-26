@@ -1,7 +1,7 @@
-from storage.base import State
-from storage.json import JsonFileStorage
 import os
 
+from storage.base import State
+from storage.json import JsonFileStorage
 
 KEY = "LAST_DATE_UPDATED"
 

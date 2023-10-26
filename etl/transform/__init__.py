@@ -1,7 +1,8 @@
-from typing import List, Dict
-from entities import Movie, Person
-from decorators import coroutine
 from collections.abc import Generator
+from typing import Dict, List
+
+from decorators import coroutine
+from entities import Movie, Person
 
 
 @coroutine

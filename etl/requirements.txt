@@ -1,7 +1,7 @@
 python-dotenv==1.0.0
 psycopg2-binary~=2.9
-fastapi>=0.68.0,<0.69.0
-pydantic>=1.8.0,<2.0.0
+pydantic==2.4.2
+pydantic-settings==2.0.3
 uvicorn>=0.15.0,<0.16.0
 backoff==2.2.1
 elastic-transport==8.4.0

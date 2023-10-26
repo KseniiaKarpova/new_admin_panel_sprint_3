@@ -1,19 +1,22 @@
-from typing import List, Any
+import json
+import os
+from collections.abc import Generator
+from datetime import datetime
+from typing import Any, List
+
+from backoff import expo, on_exception
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
-import os
-import json
-from backoff import on_exception, expo
-from collections.abc import Generator
-from decorators import coroutine, backoff_logger
-from storage import STATE, KEY
-from datetime import datetime
+
+from decorators import coroutine
+from settings import es_settings
+from storage import KEY, STATE
 
 
 class ElasticConnection:
 
     def __init__(self):
-        self.client = Elasticsearch(f"http://{os.environ.get('ES_HOST')}:{os.environ.get('ES_PORT')}/")
+        self.client = Elasticsearch(f"http://{es_settings.host}:{es_settings.port}/")
 
     def is_exist_index(self, index: str) -> bool:
         if self.client.indices.exists(index=index):
@@ -28,13 +31,16 @@ class ElasticConnection:
                 body = json.load(index_file)
                 self.client.indices.create(index=name, body=body)
 
+    def close(self):
+        self.client.transport.close()
+
 
 class ElasticExecutor:
 
     def __init__(self, client: ElasticConnection):
         self.client = client
 
-    @on_exception(expo, Exception, logger=backoff_logger)
+    @on_exception(expo, Exception)
     @coroutine
     def insert_movies(self) -> Generator[None, List[Any], None]:
         while values := (yield):

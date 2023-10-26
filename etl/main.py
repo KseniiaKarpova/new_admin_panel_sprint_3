@@ -1,9 +1,9 @@
-from extract.postgres_manager import Postgres, PostgresConnector
-from storage import STATE, KEY
 from dotenv import load_dotenv
-from transform import transform_movies
-from load.elasticsearch.manager import ElasticExecutor, ElasticConnection
 
+from extract.postgres_manager import Postgres, PostgresConnector
+from load.elasticsearch.manager import ElasticConnection, ElasticExecutor
+from storage import KEY, STATE
+from transform import transform_movies
 
 load_dotenv()
 
@@ -32,3 +32,7 @@ if __name__ == '__main__':
         load_coro = elactic.insert_movies()
         transformer_coro = transform_movies(next_node=load_coro)
         extract_coro = pg.extract(transformer_coro, cursor)
+
+    cursor.close()
+    con.close()
+    es_conn.close()

@@ -1,24 +1,20 @@
+from collections.abc import Generator
+from typing import Dict, List
+
 import psycopg2
-import os
+from psycopg2.extras import DictCursor
+
 from decorators import coroutine
 from extract.scripts import SELECT_ALL, SELECT_LAST_UPDATE
-from collections.abc import Generator
-from psycopg2.extras import DictCursor
-from typing import List, Dict
 from logger import logger
+from settings import pg_settings
 
 
 class PostgresConnector:
 
+    settings = pg_settings.dict()
+
     def __init__(self):
-        self.settings = {
-            'dbname': os.environ.get('PG_NAME'),
-            'user': os.environ.get('PG_USER'),
-            'password': os.environ.get('PG_PASSWORD'),
-            'host': os.environ.get('PG_HOST'),
-            'port': os.environ.get('PG_PORT'),
-            'options': '-c search_path=content',
-        }
         self.connection = None
 
     def open(self):
@@ -28,7 +24,8 @@ class PostgresConnector:
 
     def close(self):
         logger.info('Close PG connection')
-        self.connection.close()
+        if self.connection:
+            self.connection.close()
 
 
 class Postgres:
